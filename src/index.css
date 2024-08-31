@@ -59,7 +59,8 @@ button:focus-visible {
 input{
   background-color: #BB8493;
   padding: 1.7em 16em;
-  margin: 5em;
+  margin-top: 2em;
+  margin-bottom: 4em;
   caret-color: #1E1E1E; 
   border: 4px solid #1E1E1E;
   border-radius: 7px;
