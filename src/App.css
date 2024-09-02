@@ -110,6 +110,20 @@ button.clicked {
   text-align: center;
 }
 
+.edit-input {
+  width: 95%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 2px solid #1E1E1E;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #FFCA28;
+}
+
+
 .container p {
   color: #49243E; 
   font-size: 16px;

@@ -4,18 +4,45 @@ import woods from './assets/woods.jpg';
 import './App.css';
 import { fetchOpenAiData } from './services/openai';
 
-const EditableSection = ({ type, content, onEdit }) => (
-  <div className="container">
-    {type === 'ambientacao' ? (
-      <img src={woods} alt="Ambientação" className="ambientacao-image" />
-    ) : (
-      <p>{content}</p>
-    )}
-    <button className="edite" onClick={() => onEdit(type)}>
-      Editar {type === 'ambientacao' ? 'Ambientação' : type}
-    </button>
-  </div>
-);
+const EditableSection = ({ type, content, onEdit }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputText, setInputText] = useState('');
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    onEdit(type, inputText);
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="container">
+      {type === 'ambientacao' ? (
+        <img src={woods} alt="Ambientação" className="ambientacao-image" />
+      ) : (
+        <p>{content}</p>
+      )}
+      {isEditing ? (
+        <div>
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Digite seu prompt aqui"
+            className="edit-input"
+          />
+          <button onClick={handleSaveClick}>Salvar</button>
+        </div>
+      ) : (
+        <button className="edite" onClick={handleEditClick}>
+          Editar {type === 'ambientacao' ? 'Ambientação' : type}
+        </button>
+      )}
+    </div>
+  );
+};
 
 function App() {
   const [selectedElements, setSelectedElements] = useState({
@@ -63,12 +90,12 @@ function App() {
     }
   };
 
-  const handleEdit = async (type) => {
+  const handleEdit = async (type, inputText) => {
     try {
       let prompt = `Refaça a história de RPG com o seguinte elemento: ${type}\n`;
 
-      if (texto) {
-        prompt += `Texto adicional: ${texto}\n`;
+      if (inputText) {
+        prompt += `Texto adicional: ${inputText}\n`;
       }
 
       const result = await fetchOpenAiData(prompt);
