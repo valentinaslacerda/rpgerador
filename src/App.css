@@ -10,9 +10,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -36,6 +38,31 @@
   display: flex;
   gap: 10px;
   padding: 1em;
+  justify-content: center;
+}
+
+button {
+  border-radius: 20px;
+  border: 2.5px solid #BB8493;
+  padding: 0.6em 1.2em;
+  color: #FFCA28;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #49243E;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  min-width: 150px; 
+  text-align: center;
+}
+
+button:hover {
+  border-color: #FFCA28;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto #FFCA28;
 }
 
 button.clicked {
@@ -53,15 +80,45 @@ button.clicked {
   gap: 25px; 
 }
 
-
-.confirm{
+.confirm {
   background-color: #DBAFA0;
   border-radius: 7px;
-  color:  #49243E;
+  color: #49243E;
   font-size: 20px;
   font-weight: bold;
+  margin-bottom: 15px;
 }
 
 .confirm:hover {
   filter: drop-shadow(0 0 1em #888);
 }
+
+.ambientacao-image {
+  max-width: 100%; 
+  height: auto; 
+  max-height: 300px; 
+  border-radius: 8px; 
+  margin: 5px 0 10px 0; 
+}
+
+.container {
+  max-width: 50%;
+  background-color: #DBAFA0; 
+  padding: 10px;
+  margin: 30px auto 0 auto; 
+  border-radius: 8px;
+  text-align: center;
+}
+
+.container p {
+  color: #49243E; 
+  font-size: 16px;
+  margin: 0;
+}
+
+.edite{
+  padding: 5px;
+  font-size: 16px;
+}
+
+
