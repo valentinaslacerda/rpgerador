@@ -6,7 +6,6 @@ const baseURL = 'http://127.0.0.1:8000';
  * @returns 
  */
 async function buscar_imagens(propmt) {
-
   try {
     const response = await fetch(`${baseURL}/buscar_imagens`, {
       method: 'POST',

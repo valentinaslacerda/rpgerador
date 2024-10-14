@@ -5,6 +5,7 @@ from openai import OpenAI
 import google.generativeai as genai
 from google.api_core import retry
 from fastapi.middleware.cors import CORSMiddleware
+import random
 
 # Para gerar histórias, você precisará de uma chave da OpenAI
 
@@ -128,11 +129,87 @@ async def melhorar_prompt(prompt: PromptRequest):
 # Rota para buscar imagens
 @app.post("/buscar_imagens")
 async def buscar_imagens(prompt: PromptRequest):
-    url = f"https://api.giphy.com/v1/gifs/search?api_key={giphy_api_key}&q={prompt.prompt}&limit=10"
-    response = requests.get(url)
-    data = response.json()
-    imagens = [item['images']['original']['url'] for item in data['data']]
-    return {"imagens": imagens}
+
+    #usar o gemini para transformar o prompt em uma unicade de busca
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    generation_config = {
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "top_k": 64,
+        "max_output_tokens": 10,
+        "response_mime_type": "text/plain",
+    }
+
+    custom_prompt = f'''\
+    propmpt: {prompt.prompt}
+
+    lista: 
+    noite
+    dia
+    floresta
+    deserto
+    cidade
+
+    transforme o prompt em uma unica palavra da lista, responda com a palavra escolhida'''
+
+    response = model.generate_content(custom_prompt, generation_config=generation_config).text
+
+    noite_urls = [
+        "https://reino-de-windblack.weebly.com/uploads/8/8/0/1/8801793/2088062.jpg?347",
+        "https://nuckturp.com.br/wp-content/uploads/2022/09/Cenario-de-RPG-Nuckturp-Academia-de-Mestres-de-RPG.jpg",
+        "https://preview.redd.it/8amf24k153371.jpg?width=640&crop=smart&auto=webp&s=d15461567bad9dd7c20ba9cb86400582dc1cf30b",
+        "https://thumbs.dreamstime.com/b/mapa-de-rpg-fantasia-cima-para-baixo-e-rio-294882108.jpg"
+    ]
+
+    dia_urls = [
+        "https://www.caixinhaquantica.com.br/wp-content/uploads/2022/04/CAPA-740x414.jpg",
+        "https://universorpg.com/wp-content/uploads/2016/12/averum_cenario_de_campanha-e1481159899604.jpg",
+        "https://movimentorpg.com.br/wp-content/uploads/2021/09/sistema-vs-cenari.jpg",
+        "https://nuckturp.com.br/wp-content/uploads/2022/09/Cenario-de-RPG-Nuckturp-Academia-de-Mestres-de-RPG.jpg"
+    ]
+
+    floresta_urls = [
+        "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg0pn1xh1USLJo684OIQlw0iVRDPTvxuEcQE79bhyW16R3Yx564jp84DWBXW4XdHGgK1DgsuaLilubkW3MgL2YESAshMsp9egTCTxqNME8Ce9hglxcF_1O8EKU80BcxFgBBFb9BWw3LlV7t/s1600/Imagem+16.jpg",
+        "https://alaniarpg.weebly.com/uploads/1/7/5/4/17544523/5151719_orig.jpg",
+        "https://alaniarpg.weebly.com/uploads/1/7/5/4/17544523/5146060_orig.jpg",
+        "https://t3.ftcdn.net/jpg/07/79/45/10/360_F_779451098_RRBADWzwxiQPJMNv5Qxqk2wtARbio41v.jpg"
+    ]
+
+    deserto_urls = [
+        "https://as2.ftcdn.net/v2/jpg/07/42/76/79/1000_F_742767963_Xz0Scki0oqj7izbsPH82AiARI0vMo2Qg.jpg",
+        "https://as1.ftcdn.net/v2/jpg/08/23/15/18/1000_F_823151848_Ssmqlos87cUi4YVcFmdL9mfaR2n83zZm.jpg",
+        "https://as2.ftcdn.net/v2/jpg/08/23/14/25/1000_F_823142562_0w3Uf9nzWUvUWTHebqfbSqRnDJnY0dhw.jpg",
+        "https://as1.ftcdn.net/v2/jpg/08/47/73/94/1000_F_847739459_evBATeBaMZ1ZZXg3C1RK342vjBQ0xUs3.jpg"
+    ]
+
+    cidade_urls = [
+        "https://pm1.aminoapps.com/7636/73c3df2475e5b59d705f7c4a65db7e45b65d850cr1-703-436v2_uhq.jpg",
+        "https://overbr.com.br/wp-content/uploads/2013/02/droidscreens-epic-android.jpg",
+        "https://miro.medium.com/v2/resize:fit:1024/0*38_yCPUTH0XpKTLY.jpg",
+        "https://nuckturp.com.br/wp-content/uploads/2023/12/Cartografia-Mapa-Worldbuilding-Nuckturp-1-1024x574.png"
+    ]
+
+    response = response.strip()
+
+    if response.lower() == "noite":
+        escolhidos = random.sample(noite_urls, 1)
+        print(escolhidos)
+        return {"imagens": escolhidos}
+    elif response.lower() == "dia":
+        escolhidos = random.sample(dia_urls, 1)
+        return {"imagens": escolhidos}
+    elif response.lower() == "floresta":
+        escolhidos = random.sample(floresta_urls, 1)
+        return {"imagens": escolhidos}
+    elif response.lower() == "deserto":
+        escolhidos = random.sample(deserto_urls, 1)
+        return {"imagens": escolhidos}
+    elif response.lower() == "cidade":
+        escolhidos = random.sample(cidade_urls, 1)
+        return {"imagens": escolhidos}
+    else:
+        escolhidos = random.sample(cidade_urls, 1)
+        return {"imagens": []}
 
 # Rota para gerar histórias
 @app.post("/gerar_historia")

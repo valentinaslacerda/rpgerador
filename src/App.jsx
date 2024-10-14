@@ -7,7 +7,7 @@ import apiService from './services/api';
 import ReactMarkdown from 'react-markdown'
 import ClipLoader from "react-spinners/ClipLoader";
 
-const EditableSection = ({ type, content, onEdit }) => {
+const EditableSection = ({ type, content, onEdit, images }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputText, setInputText] = useState('');
 
@@ -33,7 +33,20 @@ const EditableSection = ({ type, content, onEdit }) => {
 
       {type === 'ambientacao' ? (
         <div>
-          <img src={woods} alt="Ambientação" className="ambientacao-image" />
+          {images ? (
+            <div className="images">
+              {images.map((image) => (
+                <img 
+                  src={image} 
+                  alt="Imagem" 
+                  className="ambientacao-image" 
+                  key={image}
+                />
+              ))}
+            </div>
+          ) : (
+            <img src={woods} alt="Ambientação" className="ambientacao-image" />
+          )}
           <ReactMarkdown>{content}</ReactMarkdown>
         </div>
       ) : (
@@ -121,12 +134,15 @@ function App() {
 
       if (ambientacao) {
         const result = await apiService.gerar_local(prompt);
+        // const result = { local: 'Local gerado' };
 
         if (!result) {
           throw new Error('Erro ao buscar dados da API');
         }
 
-        setResponse((prevResponse) => [...prevResponse, { type: 'ambientacao', content: result.local }]);
+        const imagens = await apiService.buscar_imagens(prompt) || { imagens: [] };
+
+        setResponse((prevResponse) => [...prevResponse, { type: 'ambientacao', content: result.local, images: imagens.imagens }]);
       }
 
       if (personagem) {
@@ -251,12 +267,13 @@ function App() {
         
       </div>
       <div className="response-container">
-        {response.map(({ type, content }) => (
+        {response.map(({ type, content, images }) => (
           <EditableSection
             key={type}
             type={type}
             content={content}
             onEdit={handleEdit}
+            images={images}
           />
         ))}
       </div>

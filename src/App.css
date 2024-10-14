@@ -102,7 +102,7 @@ button.clicked {
 }
 
 .container {
-  max-width: 50%;
+  width: 50%;
   background-color: #DBAFA0; 
   padding: 10px;
   margin: 30px auto 0 auto; 
