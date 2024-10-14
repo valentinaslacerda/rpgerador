@@ -140,7 +140,7 @@ function App() {
           throw new Error('Erro ao buscar dados da API');
         }
 
-        const imagens = await apiService.buscar_imagens(prompt) || { imagens: [] };
+        const imagens = await apiService.buscar_imagens(result.local) || { imagens: [] };
 
         setResponse((prevResponse) => [...prevResponse, { type: 'ambientacao', content: result.local, images: imagens.imagens }]);
       }

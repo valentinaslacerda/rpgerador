@@ -101,15 +101,6 @@ button.clicked {
   margin: 5px 0 10px 0; 
 }
 
-.container {
-  width: 50%;
-  background-color: #DBAFA0; 
-  padding: 10px;
-  margin: 30px auto 0 auto; 
-  border-radius: 8px;
-  text-align: center;
-}
-
 .edit-input {
   width: 95%;
   padding: 10px;
@@ -123,8 +114,19 @@ button.clicked {
   border-color: #FFCA28;
 }
 
+.response-container {
+  display: flex;
+  gap: 0.5rem
+}
+
 .container {
   color: #49243E;
+  width: calc(50% - 0.5rem);
+  background-color: #DBAFA0; 
+  padding: 10px;
+  /* margin: 30px auto 0 auto;  */
+  border-radius: 8px;
+  text-align: center;
 }
 
 .container button {
