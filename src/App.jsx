@@ -3,6 +3,7 @@ import logo from './assets/book.svg';
 import woods from './assets/woods.jpg';
 import './App.css';
 import { fetchOpenAiData } from './services/openai';
+import apiService from './services/api';
 
 const EditableSection = ({ type, content, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -110,6 +111,11 @@ function App() {
     }
   };
 
+  const submitTeste = async () => {
+    const result = await apiService.gerar_historia('teste');
+    console.log(result);
+  }
+
   return (
     <>
       <div>
@@ -143,6 +149,7 @@ function App() {
         <button className="confirm" onClick={handleSubmit}>
           Confirmar
         </button>
+        <button onClick={submitTeste}> teste </button>
       </div>
       <div className="response-container">
         {response.map(({ type, content }) => (
