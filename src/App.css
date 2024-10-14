@@ -123,10 +123,29 @@ button.clicked {
   border-color: #FFCA28;
 }
 
+.container {
+  color: #49243E;
+}
+
+.container button {
+  margin-top: 12px;
+}
 
 .container p {
   color: #49243E; 
   font-size: 16px;
+  margin: 0;
+}
+
+.container h1 {
+  color: #49243E; 
+  font-size: 28px;
+  margin: 0;
+}
+
+.container h2 {
+  color: #49243E; 
+  font-size: 24px;
   margin: 0;
 }
 

@@ -4,6 +4,8 @@ import woods from './assets/woods.jpg';
 import './App.css';
 import { fetchOpenAiData } from './services/openai';
 import apiService from './services/api';
+import ReactMarkdown from 'react-markdown'
+import ClipLoader from "react-spinners/ClipLoader";
 
 const EditableSection = ({ type, content, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -18,12 +20,24 @@ const EditableSection = ({ type, content, onEdit }) => {
     setIsEditing(false);
   };
 
+  const toUpperCase = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   return (
     <div className="container">
+
+      <h2>
+        {type === 'ambientacao' ? 'Ambientação' : toUpperCase(type)}
+      </h2>
+
       {type === 'ambientacao' ? (
-        <img src={woods} alt="Ambientação" className="ambientacao-image" />
+        <div>
+          <img src={woods} alt="Ambientação" className="ambientacao-image" />
+          <ReactMarkdown>{content}</ReactMarkdown>
+        </div>
       ) : (
-        <p>{content}</p>
+        <ReactMarkdown>{content}</ReactMarkdown>
       )}
       {isEditing ? (
         <div>
@@ -46,48 +60,112 @@ const EditableSection = ({ type, content, onEdit }) => {
 };
 
 function App() {
-  const [selectedElements, setSelectedElements] = useState({
-    ambientacao: false,
-    personagem: false,
-    monstro: false,
-    trilha: false,
-    historia: false,
-  });
   const [texto, setTexto] = useState('');
   const [response, setResponse] = useState([]);
 
-  const generatePrompt = () => {
-    let prompt = 'Crie uma história de RPG com os seguintes elementos:\n';
+  const [ambientacao, setAmbientacao] = useState(false);
+  const [personagem, setPersonagem] = useState(false);
+  const [monstro, setMonstro] = useState(false);
+  const [historia, setHistoria] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    Object.keys(selectedElements).forEach((key) => {
-      if (selectedElements[key])
-        prompt += `- ${key.charAt(0).toUpperCase() + key.slice(1)}\n`;
-    });
+  const handleClickAmbientacao = () => {
+    setAmbientacao(!ambientacao);
+  }
 
-    if (texto) prompt += `Texto adicional: ${texto}\n`;
+  const handleClickPersonagem = () => {
+    setPersonagem(!personagem);
+  }
 
-    return prompt;
-  };
+  const handleClickMonstro = () => {
+    setMonstro(!monstro);
+  }
+
+  const handleClickHistoria = () => {
+    setHistoria(!historia);
+  }
 
   const handleSubmit = async () => {
     try {
-      const prompt = generatePrompt();
-      const result = await fetchOpenAiData(prompt);
 
-      let newResponse = [];
+      setLoading(true);
 
-      Object.keys(selectedElements).forEach((key) => {
-        if (selectedElements[key]) {
-          newResponse.push({
-            type: key,
-            content: 'Lorem ipsum dolor sit amet...',
-          });
+      const prompt = texto;
+
+      debugger;
+
+      if (!prompt) {
+        alert('Digite algo para gerar a história');
+        return;
+      }
+
+      if (!ambientacao && !personagem && !monstro && !historia) {
+        alert('Selecione o que deseja gerar');
+        return;
+      }
+
+      //gerar historia completa
+      if (ambientacao && personagem && monstro && historia) {
+        const result = await apiService.gerar_historia_completa(prompt);
+
+        if (!result) {
+          throw new Error('Erro ao buscar dados da API');
         }
-      });
 
-      setResponse(newResponse);
+        let content = result.premise + '\n\n' + result.outline + '\n\n' + result.story_text;
+        content = content + '\n\n' + result.personagens + '\n\n' + result.monstros + '\n\n' + result.locais;
+
+        setResponse((prevResponse) => [...prevResponse, { type: 'historia', content: content }]);
+        return;
+      }
+
+      if (ambientacao) {
+        const result = await apiService.gerar_local(prompt);
+
+        if (!result) {
+          throw new Error('Erro ao buscar dados da API');
+        }
+
+        setResponse((prevResponse) => [...prevResponse, { type: 'ambientacao', content: result.local }]);
+      }
+
+      if (personagem) {
+        const result = await apiService.gerar_personagem(prompt);
+
+        if (!result) {
+          throw new Error('Erro ao buscar dados da API');
+        }
+
+        setResponse((prevResponse) => [...prevResponse, { type: 'personagem', content: result.personagem }]);
+      }
+
+      if (monstro) {
+        const result = await apiService.gerar_monstro(prompt);
+
+        if (!result) {
+          throw new Error('Erro ao buscar dados da API');
+        }
+
+        setResponse((prevResponse) => [...prevResponse, { type: 'monstro', content: result.monstro }]);
+      }
+
+      if (historia) {
+        const result = await apiService.gerar_historia(prompt);
+
+        if (!result) {
+          throw new Error('Erro ao buscar dados da API');
+        }
+
+        const content = result.premise + '\n\n' + result.outline + '\n\n' + result.story_text;
+
+        setResponse((prevResponse) => [...prevResponse, { type: 'historia', content: content }]);
+      }
+
     } catch (error) {
       console.error('Erro ao buscar dados da API:', error);
+      alert('Erro ao buscar dados da API, tente novamente');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,20 +201,33 @@ function App() {
       </div>
       <h1>RPGERADOR</h1>
       <div className="card">
-        {Object.keys(selectedElements).map((key) => (
-          <button
-            key={key}
-            className={selectedElements[key] ? 'clicked' : ''}
-            onClick={() =>
-              setSelectedElements({
-                ...selectedElements,
-                [key]: !selectedElements[key],
-              })
-            }
-          >
-            {key.charAt(0).toUpperCase() + key.slice(1)}
-          </button>
-        ))}
+
+        <button
+          onClick={handleClickAmbientacao}
+          className={ambientacao ? 'clicked' : ''}
+        >
+          Ambientação
+        </button>
+        <button
+          onClick={handleClickPersonagem}
+          className={personagem ? 'clicked' : ''}
+        >
+          Personagem
+        </button>
+        
+        <button
+          onClick={handleClickMonstro}
+          className={monstro ? 'clicked' : ''}
+        >
+          Monstro
+        </button>
+
+        <button
+          onClick={handleClickHistoria}
+          className={historia ? 'clicked' : ''}
+        >
+          História
+        </button>
       </div>
       <div className="input-container">
         <input
@@ -144,12 +235,20 @@ function App() {
           id="texto"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="Digite sua história aqui"
+          placeholder="Digite Sobre o que é sua história aqui"
         />
-        <button className="confirm" onClick={handleSubmit}>
-          Confirmar
-        </button>
-        <button onClick={submitTeste}> teste </button>
+        
+        {loading ? 
+          <ClipLoader color={'#BB8493'} loading={loading} size={150} />
+          :
+            <button 
+              className="confirm" 
+              onClick={handleSubmit}
+            >
+              Confirmar
+            </button>
+        }
+        
       </div>
       <div className="response-container">
         {response.map(({ type, content }) => (

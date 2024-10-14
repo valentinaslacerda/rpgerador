@@ -4,6 +4,7 @@ import requests
 from openai import OpenAI
 import google.generativeai as genai
 from google.api_core import retry
+from fastapi.middleware.cors import CORSMiddleware
 
 # Para gerar histórias, você precisará de uma chave da OpenAI
 
@@ -16,6 +17,14 @@ load_dotenv()
 api_key_gemini = os.getenv("API_KEY_GEMINI")
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # client = OpenAI(
 #   organization="org-m1a5hGjn7D2AT4XAoFnNCdXL",

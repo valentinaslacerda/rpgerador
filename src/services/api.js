@@ -1,4 +1,4 @@
-const baseURL = 'http://localhost:8000';
+const baseURL = 'http://127.0.0.1:8000';
 
 /**
  * 
@@ -12,6 +12,7 @@ async function buscar_imagens(propmt) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'allow-origin': '*',
       },
       body: JSON.stringify({
         prompt: propmt,
@@ -37,6 +38,8 @@ async function gerar_historia(propmt) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'allow-origin': '*',
+        'acess-control-allow-origin': '*',
       },
       body: JSON.stringify({
         prompt: propmt,
@@ -152,10 +155,13 @@ async function gerar_personagem_com_base_em_historia(historia) {
  */
 async function gerar_historia_completa(propmpt) {
   try {
+    debugger;
     const response = await fetch(`${baseURL}/gerar_historia_completa`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'allow-origin': '*',
+        'acess-control-allow-origin': '*',
       },
       body: JSON.stringify({
         prompt: propmpt,
